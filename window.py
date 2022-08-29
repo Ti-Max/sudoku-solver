@@ -9,6 +9,7 @@ class Window(QWidget):
 
         # window properties
         self.setWindowTitle("Sudoku solver")
+        self.setWindowIcon(QIcon("icon.png"))
         self.setGeometry(360, 360, 360, 360)
 
         # main layout
