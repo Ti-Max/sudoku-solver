@@ -17,26 +17,32 @@ example_puzzle = [
 ]
 
 
-def exit_app(sudoku_solver, solver_thread):
-    sudoku_solver.is_force_exit = True
-    solver_thread.join()
+def exit_app():
+    solver.is_force_exit = True
+    if solver_thread.is_alive():
+        solver_thread.join()
     sys.exit(0)
+
+
+def start_solving():
+    if not solver_thread.is_alive():
+        solver_thread.start()
 
 
 if __name__ == "__main__":
     # create window
     app = QApplication(sys.argv)
-    window = Window(example_puzzle)
-    window.show()
 
     solver = Solver()
 
-    # create a new thread and solve sudoku
-    thread = threading.Thread(target=solver.solve_sudoku, args=(example_puzzle, window,))
-    thread.start()
+    window = Window(example_puzzle, start_solving)
+    window.show()
+
+    # create a new thread which will solve sudoku
+    solver_thread = threading.Thread(target=solver.solve_sudoku, args=(example_puzzle, window,))
 
     # close solver thread if quiting the app before solution was found
-    app.aboutToQuit.connect(lambda: exit_app(solver, thread))
+    app.aboutToQuit.connect(exit_app)
 
     # run Qt app
     sys.exit(app.exec())

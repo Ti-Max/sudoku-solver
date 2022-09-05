@@ -4,7 +4,7 @@ from PyQt6.QtCore import Qt
 
 
 class Window(QWidget):
-    def __init__(self, puzzle):
+    def __init__(self, puzzle, start_solving):
         super().__init__()
 
         # window properties
@@ -23,8 +23,9 @@ class Window(QWidget):
 
         for row in range(9):
             for col in range(9):
-                cell = QLabel(str(row))
-                cell.resize(40, 40)
+                cell = QLabel("")
+                cell.setMinimumSize(40, 40)
+                cell.setMaximumSize(40, 40)
                 cell.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 cell.setFont(QFont('Roboto', 20))
 
@@ -61,6 +62,18 @@ class Window(QWidget):
 
                 cell.setStyleSheet(style)
                 self.grid.addWidget(cell, row, col)
+
+        # create controls
+        control_layout = QVBoxLayout()
+        main_layout.addLayout(control_layout)
+
+        # solve button
+        solve_button = QPushButton("Solve")
+        control_layout.addWidget(solve_button)
+        solve_button.clicked.connect(start_solving)
+
+        # update sudoku
+        self.update_sudoku(puzzle)
 
     def close_window(self):
         self.close()
