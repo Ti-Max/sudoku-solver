@@ -25,7 +25,7 @@ def exit_app():
 
 
 def start_solving():
-    if not solver_thread.is_alive():
+    if not solver_thread.is_alive() and not solver.is_solved:
         solver_thread.start()
 
 

@@ -6,12 +6,14 @@ class Solver:
 
     speed = 1
     is_force_exit = False
+    is_solved = False
 
     def solve_sudoku(self, puzzle, window):
         row, col = self.__get_next_empty(puzzle)
 
         # no more empty cells, puzzle solved
         if row is None:
+            self.is_solved = True
             sys.exit()
 
         # try every number on this cell
