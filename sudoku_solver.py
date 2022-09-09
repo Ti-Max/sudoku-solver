@@ -27,13 +27,18 @@ def exit_app():
 def start_solving():
     if not solver_thread.is_alive() and not solver.is_solved:
         solver_thread.start()
+        window.solve_started()
+
+
+def finish_solving():
+    window.solve_finished()
 
 
 if __name__ == "__main__":
     # create window
     app = QApplication(sys.argv)
 
-    solver = Solver()
+    solver = Solver(finish_solving)
 
     window = Window(example_puzzle, start_solving)
     window.show()
@@ -43,6 +48,6 @@ if __name__ == "__main__":
 
     # close solver thread if quiting the app before solution was found
     app.aboutToQuit.connect(exit_app)
-
+    print(threading.current_thread())
     # run Qt app
     sys.exit(app.exec())

@@ -1,9 +1,13 @@
+import threading
+
 from PyQt6.QtWidgets import *
 from PyQt6.QtGui import * 
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import *
 
 
 class Window(QWidget):
+    UpdateGridSignal = pyqtSignal(int)
+
     def __init__(self, puzzle, start_solving):
         super().__init__()
 
@@ -13,12 +17,22 @@ class Window(QWidget):
         self.setGeometry(360, 360, 360, 360)
 
         # main layout
-        main_layout = QHBoxLayout()
+        main_layout = QVBoxLayout()
         self.setLayout(main_layout)
+
+        # Status message
+        self.status_massage = QLabel("Click \"Solve\" to solve sudoku using a backtracking method.", self)
+        self.status_massage.setFont(QFont("Roboto", 10))
+        self.status_massage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        main_layout.addWidget(self.status_massage)
+
+        # sudoku layout
+        sudoku_layout = QHBoxLayout()
+        main_layout.addLayout(sudoku_layout)
 
         # create sudoku grid
         self.grid = QGridLayout()
-        main_layout.addLayout(self.grid)
+        sudoku_layout.addLayout(self.grid)
         self.grid.setSpacing(0)
 
         for row in range(9):
@@ -65,12 +79,14 @@ class Window(QWidget):
 
         # create controls
         control_layout = QVBoxLayout()
-        main_layout.addLayout(control_layout)
+        sudoku_layout.addLayout(control_layout)
 
         # solve button
-        solve_button = QPushButton("Solve")
-        control_layout.addWidget(solve_button)
-        solve_button.clicked.connect(start_solving)
+        self.solve_button = QPushButton("Solve")
+        control_layout.addWidget(self.solve_button)
+        self.solve_button.clicked.connect(start_solving)
+
+        self.UpdateGridSignal.connect(lambda: self.update_sudoku(puzzle))
 
         # update sudoku
         self.update_sudoku(puzzle)
@@ -89,3 +105,11 @@ class Window(QWidget):
 
                 self.grid.itemAt(i).widget().setText(value)
                 i += 1
+
+    def solve_started(self):
+        self.status_massage.setText("Solving sudoku...")
+        self.status_massage.setStyleSheet("color: red;")
+
+    def solve_finished(self):
+        self.status_massage.setText("Sudoku is solved!")
+        self.status_massage.setStyleSheet("color: green;")

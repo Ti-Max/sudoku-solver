@@ -8,11 +8,15 @@ class Solver:
     is_force_exit = False
     is_solved = False
 
+    def __init__(self, finish_callback):
+        self.finish_callback = finish_callback
+
     def solve_sudoku(self, puzzle, window):
         row, col = self.__get_next_empty(puzzle)
 
         # no more empty cells, puzzle solved
         if row is None:
+            self.finish_callback()
             self.is_solved = True
             sys.exit()
 
@@ -27,8 +31,8 @@ class Solver:
                 puzzle[row][col] = value
 
                 # update window
-                window.update_sudoku(puzzle=puzzle)
-                time.sleep(0.1 / self.speed)
+                window.UpdateGridSignal.emit(puzzle)
+                # time.sleep(0.1 / self.speed)
 
                 # solve rest of the puzzle
                 if self.solve_sudoku(puzzle, window):
